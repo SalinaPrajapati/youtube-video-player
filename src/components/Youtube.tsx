@@ -1,6 +1,12 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import {
+  Card
+} from "@/components/ui/card"
+import { HiHeart, HiOutlineHeart } from "react-icons/hi";
+import { useAppSelector } from "../store";
+import { useRouter } from "next/navigation";
+
 interface PlaylistItem {
   snippet: {
     title: string;
@@ -18,7 +24,12 @@ interface PlaylistItem {
 export default function Youtube() {
   const YOUTUBE_PLAYLIST_ITEMS_API =
     "https://www.googleapis.com/youtube/v3/playlistItems";
+
+    const router = useRouter();
   const [playlistItems, setPlaylistItems] = useState<PlaylistItem[]>([]);
+  const isAuth = useAppSelector((state) => state.auth.isAuth);
+  const [likedVideos, setLikedVideos] = useState<string[]>([]);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>();
 
   const fetchPlaylistItems = async () => {
     try {
@@ -44,34 +55,59 @@ export default function Youtube() {
     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
     window.open(videoUrl, "_blank");
   };
+  const toggleLike = (videoId: string) => {
+    if (!isAuthenticated) {
+      router.push("/");
+      return;
+    }
+    if (likedVideos.includes(videoId)) {
+      setLikedVideos(likedVideos.filter((id) => id !== videoId));
+    } else {
+      setLikedVideos([...likedVideos, videoId]);
+    }
+  }
 
   useEffect(() => {
-    console.log("Render - playlistItems:", playlistItems);
   }, [playlistItems]);
 
   useEffect(() => {
     fetchPlaylistItems();
   }, []);
+  useEffect(() => {
+    if (isAuth) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [isAuth]);
 
   return (
-    <div className="px-4 md:px-7 mt-20 w-full bg-black text-white">
-      <Button className="bg-red-900" onClick={fetchPlaylistItems}>Fetch Playlist Items</Button>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-        {playlistItems.map((item) => (
-          <div
-            key={item.snippet.resourceId.videoId}
-            className="border p-4 cursor-pointer hover:shadow-md transition duration-300"
-            onClick={() => playVideoInNewTab(item.snippet.resourceId.videoId)}
-          >
-            <img
-              className="w-full h-40 object-cover mb-2"
-              src={item.snippet.thumbnails.default.url}
-              alt="Thumbnail"
-            />
-            <p className="font-bold text-sm">{item.snippet.title}</p>
-          </div>
-        ))}
-      </div>
+    <div className="w-full px-4 mt-16 text-white bg-black md:px-7">
+        <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2 lg:grid-cols-3">
+          {playlistItems.map((item) => (
+      <Card className="bg-blac hover:bg-slate-900">
+            <div
+              key={item.snippet.resourceId.videoId}
+              className="p-4 cursor-pointer hover:shadow-md"
+            >
+              <img
+               onClick={() => playVideoInNewTab(item.snippet.resourceId.videoId)}
+                className="object-cover w-full h-40 mb-2"
+                src={item.snippet.thumbnails.default.url}
+                alt="Thumbnail"
+              />
+              <div className="flex items-center">
+                <p className="text-sm font-bold text-white w-96">{item.snippet.title}</p>
+                {isAuthenticated ? (
+                  <HiHeart size={25} color="red" onClick={toggleLike} />
+                ) : (
+                  <HiOutlineHeart size={25} color="red" onClick={toggleLike} />
+                )}
+              </div>
+            </div>
+          </Card>
+          ))}
+        </div>
     </div>
   );
 }

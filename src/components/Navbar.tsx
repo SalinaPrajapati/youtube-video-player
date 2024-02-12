@@ -43,9 +43,9 @@ const NavigationMenuDemo = () => {
   };
 
   return (
-    <div className="flex items-center justify-between py-2 px-4 md:px-7 fixed top-0 w-full bg-black z-40">
+    <div className="fixed top-0 z-40 flex items-center justify-between w-full px-4 py-3 bg-black md:px-7">
       <div className="">
-        <h2 className="text-2xl md:text-4xl font-black md:font-extrabold text-white hover:text-red-200">
+        <h2 className="text-2xl font-black text-white md:text-4xl md:font-extrabold hover:text-red-200">
           Youtube
         </h2>
       </div>
@@ -64,7 +64,7 @@ const NavigationMenuDemo = () => {
             {!isAuthenticated && (
               <>
                 <Button
-                  className="text-white bg-red-600 hover:bg-red-500 ml-1"
+                  className="ml-1 text-white bg-red-600 hover:bg-red-500"
                   asChild
                 >
                   <Link href="/signup">Sign Up</Link>

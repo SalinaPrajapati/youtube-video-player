@@ -58,6 +58,7 @@ const SignInForm = () => {
       })
       router.push("/");
     } catch (error: any) {
+      console.error(error);
       toast({
         title: "Error",
         description: "Oops! Something when wrong!",
@@ -67,6 +68,7 @@ const SignInForm = () => {
       setLoading(false);
     }
   };
+  
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
@@ -105,7 +107,7 @@ const SignInForm = () => {
         </div>
 
         <div>
-          <Button className="text-white bg-red-600 hover:bg-red-500 mt-6" type="submit">
+          <Button className="mt-6 text-white bg-red-600 hover:bg-red-500" type="submit">
             Sign in
           </Button>
         </div>

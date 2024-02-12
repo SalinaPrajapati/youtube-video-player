@@ -37,6 +37,7 @@ const FormSchema = z
 const UserAuthForm = () => {
   const router = useRouter();
   const { toast } = useToast();
+  
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -131,7 +132,7 @@ const UserAuthForm = () => {
           />
         </div>
         <Button
-          className="text-white bg-red-600 hover:bg-red-500 mt-6"
+          className="mt-6 text-white bg-red-600 hover:bg-red-500"
           type="submit"
         >
           Sign up
