@@ -11,6 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { toast } from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
@@ -19,7 +20,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useAppDispatch } from "@/store";
 import { setAuth, setJid } from "@/store/slices/authSlice";
-import { useToast } from "@/components/ui/use-toast"
 
 const FormSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email"),
@@ -30,7 +30,6 @@ const FormSchema = z.object({
 });
 const SignInForm = () => {
   const router = useRouter();
-  const { toast } = useToast()
   const dispatch = useAppDispatch();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -46,24 +45,16 @@ const SignInForm = () => {
     try {
       setLoading(true);
       const response = await axios.post("/api/users/login", values);
-      console.log(values)
       if(response.data.success){
         const response = await axios.get("/api/users/me");
         dispatch(setJid(response.data.data));
         dispatch(setAuth(true));
       }
-      toast({
-        title: "Success",
-        description: "Your are successfully logged In",
-      })
+      toast.success("Successfully logged In");
       router.push("/");
     } catch (error: any) {
       console.error(error);
-      toast({
-        title: "Error",
-        description: "Oops! Something when wrong!",
-        variant: "destructive"
-      })
+      toast.error("Oops! Something when wrong!");
     } finally {
       setLoading(false);
     }
